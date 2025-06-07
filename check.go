@@ -56,7 +56,7 @@ func main() {
 	clearScreen()
 
 	if len(os.Args) < 2 {
-		log.Fatal("Please enter:\n go run main.go user_agents.txt")
+		log.Fatal("Please enter:\n go run check.go user_agents.txt")
 	}
 
 	fileName := os.Args[1]
