@@ -36,11 +36,11 @@ pkg install golang -y &&  pkg install git -y
 ```
 ### Step 3: Clone the File to Your Device
 ```
-git clone https://github.com/monsmain/check-user-agent
+git clone https://github.com/monsmain/check-user-agents
 ```
 ### Step 4: Call It
 ```
-cd check-user-agent
+cd check-user-agents
 ```
 ### Final Step: Run It
 ```
