@@ -27,11 +27,11 @@ pkg install golang -y &&  pkg install git -y
 ```
 ### قدم شش:کپی کردن فایل در دستگاه
 ```
-git clone https://github.com/monsmain/check-user-agent
+git clone https://github.com/monsmain/check-user-agents
 ```
 ### قدم هفت: فراخوانی
 ```
-cd check-user-agent
+cd check-user-agents
 ```
 ### قدم آخر: اجرای آن
 ```
