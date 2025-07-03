@@ -1,4 +1,4 @@
-# checker user agent active✅️
+# checker user agent✅️
 
 ```
 git clone https://github.com/monsmain/check-user-agent
