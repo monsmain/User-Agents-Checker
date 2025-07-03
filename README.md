@@ -1,5 +1,5 @@
-# checker user agent✅️
-
+# user agents checker✅️
+## A more complete and newer version will be released soon.
 ```
 git clone https://github.com/monsmain/check-user-agent
 ```
