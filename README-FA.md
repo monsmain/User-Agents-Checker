@@ -1,4 +1,5 @@
-# یوزر ایجنت چکر✅️
+<div align="center"> <h1>یوزر ایجنت چکر✅️</h1>
+</div>
 <div align="center">
     <p>
         <a href="README.md">
@@ -40,8 +41,8 @@ cd User-Agents-Checker
 go run check.go
 ```
 ### گزینه‌های استفاده :
-- گزینه Use default User-Agents :از این گزینه میتوانید به صورت خودکار تمام User-Agent هایی که در فایل User-Browser.txt قرار دارند را برای بررسی کنید.
-- گزینه Enter your own User-Agents :از این گزینه میتوانید به صورت دستی User-Agent های مورد نظر خود را مستقیماً در ترمینال وارد کنید.
+- گزینه Use default User-Agents :از این گزینه میتوانید به صورت خودکار تمام User-Agent هایی که در فایل User-Browser.txt قرار دارند را چک کنید.
+- گزینه Enter your own User-Agents :از این گزینه میتوانید به صورت دستی User-Agent های مورد نظر خود را مستقیماً در ترمینال وارد کنید و آنها را چک کنید.
 
 >  **راهنما**                        
 
