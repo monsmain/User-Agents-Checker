@@ -69,38 +69,48 @@ func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- Faile
 	progressChan <- struct{}{}
 }
 
-func main() {
-	clearScreen()
-
-	if len(os.Args) < 2 {
-		log.Fatal("Please run as:\n go run check.go user_agents.txt")
-	}
-
-	fileName := os.Args[1]
-	file, err := os.Open(fileName)
+func getUserAgentsFromFile(filename string) ([]string, error) {
+	file, err := os.Open(filename)
 	if err != nil {
-		log.Fatalf("Error opening file '%s': %v", fileName, err)
+		return nil, err
 	}
 	defer file.Close()
-
-
-	var userAgents []string
+	var agents []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		ua := scanner.Text()
 		if ua != "" {
-			userAgents = append(userAgents, ua)
+			agents = append(agents, ua)
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		log.Fatalf("Error reading file: %v", err)
+		return nil, err
 	}
+	return agents, nil
+}
+
+func getUserAgentsFromInput() []string {
+	fmt.Println("Enter your User-Agents separated by a comma ',' (e.g. UA1,UA2,UA3):")
+	reader := bufio.NewReader(os.Stdin)
+	line, _ := reader.ReadString('\n')
+	line = strings.TrimSpace(line)
+	parts := strings.Split(line, ",")
+	var agents []string
+	for _, ua := range parts {
+		trimmed := strings.TrimSpace(ua)
+		if trimmed != "" {
+			agents = append(agents, trimmed)
+		}
+	}
+	return agents
+}
+
+func runCheckProcess(userAgents []string) {
 	total := len(userAgents)
 	if total == 0 {
-		log.Fatal("No User-Agents found in file.")
+		fmt.Println("No User-Agents found.")
+		return
 	}
-
-	file.Seek(0, 0)
 
 	var wg sync.WaitGroup
 	activeChan := make(chan string)
@@ -112,6 +122,7 @@ func main() {
 
 	var readerWg sync.WaitGroup
 	readerWg.Add(2)
+
 
 	go func() {
 		defer readerWg.Done()
@@ -142,13 +153,9 @@ func main() {
 
 	fmt.Println("🔎 Checking User-Agents... Please wait.")
 
-	scanner = bufio.NewScanner(file)
-	for scanner.Scan() {
-		userAgent := scanner.Text()
-		if userAgent != "" {
-			wg.Add(1)
-			go checkUserAgent(userAgent, activeChan, failedChan, &wg, progressChan)
-		}
+	for _, userAgent := range userAgents {
+		wg.Add(1)
+		go checkUserAgent(userAgent, activeChan, failedChan, &wg, progressChan)
 	}
 
 	wg.Wait()
@@ -162,7 +169,7 @@ func main() {
 	fmt.Println("✅ Review completed.")
 	fmt.Println("------------------------------------")
 
-	// Show active User-Agents
+
 	fmt.Println("🎯 Active User-Agents:")
 	if len(activeUserAgents) == 0 {
 		fmt.Println("No active User-Agents found!")
@@ -174,7 +181,7 @@ func main() {
 	}
 	fmt.Println("------------------------------------")
 
-	// Show failed User-Agents
+
 	if len(failedUserAgents) == 0 {
 		fmt.Println("🎉 All User-Agents are working correctly!")
 	} else {
@@ -184,5 +191,33 @@ func main() {
 			fmt.Printf("Reason: %s\n", result.Reason)
 			fmt.Println("------------------------------------")
 		}
+	}
+}
+
+func main() {
+	clearScreen()
+	fmt.Println("Welcome to User-Agent Checker!")
+	fmt.Println("==============================")
+	fmt.Println("Please choose an option:")
+	fmt.Println("1 - Use default User-Agents from user_agents.txt")
+	fmt.Println("2 - Enter your own User-Agents (comma separated)")
+	fmt.Print("Enter your choice (1 or 2): ")
+
+	var choice string
+	fmt.Scanln(&choice)
+
+	switch choice {
+	case "1":
+		agents, err := getUserAgentsFromFile("user_agents.txt")
+		if err != nil {
+			fmt.Printf("Error reading user_agents.txt: %v\n", err)
+			return
+		}
+		runCheckProcess(agents)
+	case "2":
+		agents := getUserAgentsFromInput()
+		runCheckProcess(agents)
+	default:
+		fmt.Println("Invalid option. Exiting.")
 	}
 }
