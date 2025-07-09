@@ -119,7 +119,7 @@ func getUserAgentsFromInput() []string {
 }
 
 func chooseSpeedMenu() (int, string) {
-	fmt.Print(ColorWhite + ":Choose speed [medium/fast] " + ColorReset)
+	fmt.Print(ColorRed + ":Choose speed [medium/fast] " + ColorReset)
 	var speedChoice string
 	fmt.Scanln(&speedChoice)
 	speedChoice = strings.ToLower(strings.TrimSpace(speedChoice))
@@ -128,7 +128,7 @@ func chooseSpeedMenu() (int, string) {
 		fmt.Println(ColorYellow + "Fast mode selected." + ColorReset)
 		return 50, "Fast mode selected."
 	case "medium":
-		fmt.Println(ColorYellow + "Medium mode selected." + ColorReset)
+		fmt.Println(ColorGreen + "Medium mode selected." + ColorReset)
 		return 10, "Medium mode selected."
 	default:
 		fmt.Println(ColorRed + "Invalid speed choice. Defaulting to medium mode" + ColorReset)
