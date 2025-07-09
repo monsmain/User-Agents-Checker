@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -29,13 +30,13 @@ func clearScreen() {
 	cmd.Run()
 }
 
-
+// printProgress prints a progress bar in the terminal (always on the same line)
 func printProgress(current, total int) {
 	percent := (current * 100) / total
 	bar := strings.Repeat("█", percent/2) + strings.Repeat("-", 50-percent/2)
 	fmt.Printf("\rProgress: [%s] %d%% (%d/%d)", bar, percent, current, total)
 	if current == total {
-		fmt.Println()
+		fmt.Print("\n") // Print newline only at the end
 	}
 }
 
@@ -122,7 +123,7 @@ func runCheckProcess(userAgents []string) {
 	var readerWg sync.WaitGroup
 	readerWg.Add(2)
 
-
+	// Goroutine to collect active User-Agents
 	go func() {
 		defer readerWg.Done()
 		for ua := range activeChan {
@@ -130,7 +131,7 @@ func runCheckProcess(userAgents []string) {
 		}
 	}()
 
-
+	// Goroutine to collect failed User-Agents
 	go func() {
 		defer readerWg.Done()
 		for result := range failedChan {
@@ -138,7 +139,7 @@ func runCheckProcess(userAgents []string) {
 		}
 	}()
 
-
+	// Goroutine to print progress
 	var progressWg sync.WaitGroup
 	progressWg.Add(1)
 	go func() {
@@ -151,7 +152,6 @@ func runCheckProcess(userAgents []string) {
 	}()
 
 	fmt.Println("🔎 Checking User-Agents... Please wait.")
-
 	for _, userAgent := range userAgents {
 		wg.Add(1)
 		go checkUserAgent(userAgent, activeChan, failedChan, &wg, progressChan)
@@ -168,7 +168,7 @@ func runCheckProcess(userAgents []string) {
 	fmt.Println("✅ Review completed.")
 	fmt.Println("------------------------------------")
 
-
+	// Show active User-Agents
 	fmt.Println("🎯 Active User-Agents:")
 	if len(activeUserAgents) == 0 {
 		fmt.Println("No active User-Agents found!")
@@ -180,7 +180,7 @@ func runCheckProcess(userAgents []string) {
 	}
 	fmt.Println("------------------------------------")
 
-
+	// Show failed User-Agents
 	if len(failedUserAgents) == 0 {
 		fmt.Println("🎉 All User-Agents are working correctly!")
 	} else {
