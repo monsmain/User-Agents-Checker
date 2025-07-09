@@ -72,7 +72,7 @@ func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- Faile
 			lastErr = fmt.Errorf("Error creating request: %v", err)
 			continue
 		}
-		req.Header.Set("User Agent", ua)
+		req.Header.Set("User-Agent", ua)
 		resp, err := client.Do(req)
 		if err != nil {
 			lastErr = fmt.Errorf("Request failed: %v", err)
