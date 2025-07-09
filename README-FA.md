@@ -41,19 +41,14 @@ cd User-Agents-Checker
 go run check.go
 ```
 ### گزینه‌های استفاده :
-- گزینه Use default User-Agents : از این گزینه می‌توانید حمله به لیست مجوزهای پیش‌فرض ابزار را شروع کنید.
-- گزینه Enter your own User-Agents : از این گزینه می‌توانید لیست عبور دستی را انتخاب کرده و حمله را امتحان کنید.
+- گزینه Use default User-Agents : 
+- گزینه Enter your own User-Agents : 
 
 >  **راهنما**                        
 
 >1: از بین 2 گزینه Use default User-Agents و Enter your own User-Agents یکی رو انتخاب کنید.
 
->1-1: در صورتی که گزینه 2 رو انتخاب کردید روی
- بزنید تا اموزش این قسمت رو ببینید. 
 
->2: در گزینه 1 بعد از اجرای دستورات در قسمت 'enter Instagram username`یوزرنیم رو بنویسید و اینتر بزنید.
-
->3:و در نهایت کد اجرا میشود و پسورد اکانت رو پیدا میکند.
 ## اهدا❤️
 اگر این کد را برای خود مفید می‌دانید، می‌توانید با اهدای هر مبلغی از آن حمایت کنید. 
   <a href="https://monsmain.github.io/index.html#timeline03-1l"><img src="https://img.shields.io/badge/Donate-E5322D?style=for-the-badge&logo=ilovepdf&logoColor=white" /></a>
