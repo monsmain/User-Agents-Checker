@@ -59,7 +59,7 @@ func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- Faile
 	defer func() { <-semaphore }()
 
 	if !userAgentPattern.MatchString(ua) {
-		failedChan <- FailedResult{UserAgent: ua, Reason: "Invalid User-Agent structure (not real UA)"}
+		failedChan <- FailedResult{UserAgent: ua, Reason: "Invalid User Agent structure (not real UA)"}
 		progressChan <- struct{}{}
 		return
 	}
@@ -72,7 +72,7 @@ func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- Faile
 			lastErr = fmt.Errorf("Error creating request: %v", err)
 			continue
 		}
-		req.Header.Set("User-Agent", ua)
+		req.Header.Set("User Agent", ua)
 		resp, err := client.Do(req)
 		if err != nil {
 			lastErr = fmt.Errorf("Request failed: %v", err)
@@ -112,7 +112,7 @@ func getUserAgentsFromFile(filename string) ([]string, error) {
 }
 
 func getUserAgentsFromInput() []string {
-    fmt.Println(ColorWhite + "Enter each User-Agent in a separate line, then press Enter on empty line:" + ColorReset)
+    fmt.Println(ColorWhite + "Enter each User Agent in a separate line, then press Enter on empty line:" + ColorReset)
     reader := bufio.NewReader(os.Stdin)
     var agents []string
     for {
@@ -150,7 +150,7 @@ func chooseSpeedMenu() (int, string) {
 func runCheckProcess(userAgents []string, concurrency int) {
 	total := len(userAgents)
 	if total == 0 {
-		fmt.Println(ColorRed + "No User-Agents found." + ColorReset)
+		fmt.Println(ColorRed + "No User Agents found." + ColorReset)
 		return
 	}
 
@@ -191,7 +191,7 @@ func runCheckProcess(userAgents []string, concurrency int) {
 		}
 	}()
 
-	fmt.Println(ColorYellow + "🔎 Checking User-Agents... Please wait." + ColorReset)
+	fmt.Println(ColorYellow + "🔎 Checking User Agents... Please wait." + ColorReset)
 	startTime := time.Now()
 	for _, userAgent := range userAgents {
 		semaphore <- struct{}{}
@@ -209,10 +209,10 @@ func runCheckProcess(userAgents []string, concurrency int) {
 
 	clearScreen()
 	fmt.Println(ColorWhite + "✅ Review completed." + ColorReset)
-	fmt.Println(ColorGreen + "🎯 Active User-Agents:" + ColorReset)
+	fmt.Println(ColorGreen + "🎯 Active User Agents:" + ColorReset)
 	fmt.Println("------------------------------------")
 	if len(activeUserAgents) == 0 {
-		fmt.Println(ColorYellow + "No active User-Agents found!" + ColorReset)
+		fmt.Println(ColorYellow + "No active User Agents found!" + ColorReset)
 	} else {
 		for _, ua := range activeUserAgents {
 			fmt.Println(ColorGreen + ua + ColorReset)
@@ -222,12 +222,12 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	fmt.Println("------------------------------------")
 
 	if len(failedUserAgents) == 0 {
-		fmt.Println(ColorGreen + "🎉 All User-Agents are working correctly!" + ColorReset)
+		fmt.Println(ColorGreen + "🎉 All User Agents are working correctly!" + ColorReset)
 	} else {
-		fmt.Printf(ColorRed+"❌ %d inactive User-Agent(s) found:\n\n"+ColorReset, len(failedUserAgents))
+		fmt.Printf(ColorRed+"❌ %d inactive User Agent(s) found:\n\n"+ColorReset, len(failedUserAgents))
 			fmt.Println("------------------------------------")
 		for _, result := range failedUserAgents {
-			fmt.Printf(ColorRed+"User-Agent: %s\n"+ColorReset, result.UserAgent)
+			fmt.Printf(ColorRed+"User Agent: %s\n"+ColorReset, result.UserAgent)
 			fmt.Printf(ColorRed+"Reason: %s\n"+ColorReset, result.Reason)
 		}
 	}
@@ -240,7 +240,7 @@ func main() {
 	fmt.Println(ColorGreen + "Welcome to User-Agent Checker!" + ColorReset)
 	fmt.Println(ColorWhite + "==============================" + ColorReset)
 	fmt.Println(ColorYellow + "Please choose an option:" + ColorReset)
-	fmt.Println(ColorWhite + "1 - Use default User-Agents from user_agents.txt" + ColorReset)
+	fmt.Println(ColorWhite + "1 - Use default User Agents from User-Browser.txt" + ColorReset)
 	fmt.Println(ColorWhite + "2 - Enter your own User-Agents (comma separated)" + ColorReset)
 	fmt.Print(ColorRed + "Enter your choice (1 or 2): " + ColorReset)
 
@@ -249,7 +249,7 @@ func main() {
 
 	switch choice {
 	case "1":
-		agents, err := getUserAgentsFromFile("user_agents.txt")
+		agents, err := getUserAgentsFromFile("User-Browser.txt")
 		if err != nil {
 			fmt.Printf(ColorRed+"Error reading user_agents.txt: %v\n"+ColorReset, err)
 			return
