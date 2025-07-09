@@ -225,13 +225,12 @@ func runCheckProcess(userAgents []string, concurrency int) {
 		fmt.Println(ColorGreen + "🎉 All User-Agents are working correctly!" + ColorReset)
 	} else {
 		fmt.Printf(ColorRed+"❌ %d inactive User-Agent(s) found:\n\n"+ColorReset, len(failedUserAgents))
+			fmt.Println("------------------------------------")
 		for _, result := range failedUserAgents {
 			fmt.Printf(ColorRed+"User-Agent: %s\n"+ColorReset, result.UserAgent)
 			fmt.Printf(ColorRed+"Reason: %s\n"+ColorReset, result.Reason)
-			fmt.Println("------------------------------------")
 		}
 	}
-
 	fmt.Printf(ColorWhite+"\nSummary:\nTotal: %d  |  Active: %d  |  Inactive: %d  |  Time: %s\n"+ColorReset,
 		total, len(activeUserAgents), len(failedUserAgents), elapsed.Round(time.Second).String())
 }
