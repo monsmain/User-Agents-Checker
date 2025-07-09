@@ -9,9 +9,17 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"time"
+	"strconv"
+
+	"github.com/fatih/color"
 )
 
-const testURL = "https://httpbin.org/user-agent"
+const (
+	testURL    = "https://httpbin.org/user-agent"
+	maxRetries = 3
+	timeoutSec = 5
+)
 
 type FailedResult struct {
 	UserAgent string
@@ -29,42 +37,48 @@ func clearScreen() {
 	cmd.Run()
 }
 
-// printProgress prints a progress bar in the terminal (always on the same line)
 func printProgress(current, total int) {
 	percent := (current * 100) / total
 	bar := strings.Repeat("█", percent/2) + strings.Repeat("-", 50-percent/2)
+	color.Set(color.FgYellow)
 	fmt.Printf("\rProgress: [%s] %d%% (%d/%d)", bar, percent, current, total)
+	color.Unset()
 	if current == total {
-		fmt.Print("\n") // Print newline only at the end
+		fmt.Print("\n")
 	}
 }
 
-func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- FailedResult, wg *sync.WaitGroup, progressChan chan<- struct{}) {
+
+func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- FailedResult, semaphore chan struct{}, wg *sync.WaitGroup, progressChan chan<- struct{}) {
 	defer wg.Done()
 
-	client := &http.Client{}
+	defer func() { <-semaphore }() 
 
-	req, err := http.NewRequest("GET", testURL, nil)
-	if err != nil {
-		failedChan <- FailedResult{UserAgent: ua, Reason: fmt.Sprintf("Error creating request: %v", err)}
+	var lastErr error
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		client := &http.Client{Timeout: timeoutSec * time.Second}
+		req, err := http.NewRequest("GET", testURL, nil)
+		if err != nil {
+			lastErr = fmt.Errorf("Error creating request: %v", err)
+			continue
+		}
+		req.Header.Set("User-Agent", ua)
+		resp, err := client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("Request failed: %v", err)
+			continue
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			lastErr = fmt.Errorf("Received status code: %d", resp.StatusCode)
+			continue
+		}
+		activeChan <- ua
 		progressChan <- struct{}{}
 		return
 	}
 
-	req.Header.Set("User-Agent", ua)
-	resp, err := client.Do(req)
-	if err != nil {
-		failedChan <- FailedResult{UserAgent: ua, Reason: fmt.Sprintf("Request failed: %v", err)}
-		progressChan <- struct{}{}
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		failedChan <- FailedResult{UserAgent: ua, Reason: fmt.Sprintf("Received status code: %d", resp.StatusCode)}
-		progressChan <- struct{}{}
-		return
-	}
-	activeChan <- ua
+	failedChan <- FailedResult{UserAgent: ua, Reason: lastErr.Error()}
 	progressChan <- struct{}{}
 }
 
@@ -104,10 +118,34 @@ func getUserAgentsFromInput() []string {
 	return agents
 }
 
-func runCheckProcess(userAgents []string) {
+func chooseSpeedMenu() int {
+	color.Set(color.FgCyan)
+	fmt.Println("\nSelect speed:")
+	fmt.Println("1 - Fast (50 concurrent checks)")
+	fmt.Println("2 - Medium (10 concurrent checks)")
+	fmt.Print("Enter your choice (1 or 2): ")
+	color.Unset()
+	var speedChoice string
+	fmt.Scanln(&speedChoice)
+	switch speedChoice {
+	case "1":
+		return 50
+	case "2":
+		return 10
+	default:
+		color.Set(color.FgRed)
+		fmt.Println("Invalid speed. Defaulting to Medium (10).")
+		color.Unset()
+		return 10
+	}
+}
+
+func runCheckProcess(userAgents []string, concurrency int) {
 	total := len(userAgents)
 	if total == 0 {
+		color.Set(color.FgRed)
 		fmt.Println("No User-Agents found.")
+		color.Unset()
 		return
 	}
 
@@ -115,6 +153,7 @@ func runCheckProcess(userAgents []string) {
 	activeChan := make(chan string)
 	failedChan := make(chan FailedResult)
 	progressChan := make(chan struct{})
+	semaphore := make(chan struct{}, concurrency)
 
 	var activeUserAgents []string
 	var failedUserAgents []FailedResult
@@ -122,7 +161,7 @@ func runCheckProcess(userAgents []string) {
 	var readerWg sync.WaitGroup
 	readerWg.Add(2)
 
-	// Goroutine to collect active User-Agents
+
 	go func() {
 		defer readerWg.Done()
 		for ua := range activeChan {
@@ -130,7 +169,7 @@ func runCheckProcess(userAgents []string) {
 		}
 	}()
 
-	// Goroutine to collect failed User-Agents
+
 	go func() {
 		defer readerWg.Done()
 		for result := range failedChan {
@@ -138,7 +177,7 @@ func runCheckProcess(userAgents []string) {
 		}
 	}()
 
-	// Goroutine to print progress
+
 	var progressWg sync.WaitGroup
 	progressWg.Add(1)
 	go func() {
@@ -150,10 +189,14 @@ func runCheckProcess(userAgents []string) {
 		}
 	}()
 
+	color.Set(color.FgHiMagenta)
 	fmt.Println("🔎 Checking User-Agents... Please wait.")
+	color.Unset()
+	startTime := time.Now()
 	for _, userAgent := range userAgents {
+		semaphore <- struct{}{} 
 		wg.Add(1)
-		go checkUserAgent(userAgent, activeChan, failedChan, &wg, progressChan)
+		go checkUserAgent(userAgent, activeChan, failedChan, semaphore, &wg, progressChan)
 	}
 
 	wg.Wait()
@@ -162,44 +205,64 @@ func runCheckProcess(userAgents []string) {
 	close(progressChan)
 	readerWg.Wait()
 	progressWg.Wait()
+	elapsed := time.Since(startTime)
 
 	clearScreen()
+	color.Set(color.FgGreen)
 	fmt.Println("✅ Review completed.")
+	color.Unset()
 	fmt.Println("------------------------------------")
-
 	// Show active User-Agents
+	color.Set(color.FgGreen)
 	fmt.Println("🎯 Active User-Agents:")
+	color.Unset()
 	if len(activeUserAgents) == 0 {
+		color.Set(color.FgYellow)
 		fmt.Println("No active User-Agents found!")
+		color.Unset()
 	} else {
 		for _, ua := range activeUserAgents {
+			color.Set(color.FgGreen)
 			fmt.Println(ua)
+			color.Unset()
 			fmt.Println("------------------------------------")
 		}
 	}
 	fmt.Println("------------------------------------")
-
 	// Show failed User-Agents
 	if len(failedUserAgents) == 0 {
+		color.Set(color.FgGreen)
 		fmt.Println("🎉 All User-Agents are working correctly!")
+		color.Unset()
 	} else {
+		color.Set(color.FgRed)
 		fmt.Printf("❌ %d inactive User-Agent(s) found:\n\n", len(failedUserAgents))
+		color.Unset()
 		for _, result := range failedUserAgents {
+			color.Set(color.FgRed)
 			fmt.Printf("User-Agent: %s\n", result.UserAgent)
 			fmt.Printf("Reason: %s\n", result.Reason)
+			color.Unset()
 			fmt.Println("------------------------------------")
 		}
 	}
+
+	color.Set(color.FgCyan)
+	fmt.Printf("\nSummary:\nTotal: %d  |  Active: %d  |  Inactive: %d  |  Time: %s\n",
+		total, len(activeUserAgents), len(failedUserAgents), elapsed.Round(time.Second).String())
+	color.Unset()
 }
 
 func main() {
 	clearScreen()
+	color.Set(color.FgCyan)
 	fmt.Println("Welcome to User-Agent Checker!")
 	fmt.Println("==============================")
 	fmt.Println("Please choose an option:")
 	fmt.Println("1 - Use default User-Agents from user_agents.txt")
 	fmt.Println("2 - Enter your own User-Agents (comma separated)")
 	fmt.Print("Enter your choice (1 or 2): ")
+	color.Unset()
 
 	var choice string
 	fmt.Scanln(&choice)
@@ -208,14 +271,20 @@ func main() {
 	case "1":
 		agents, err := getUserAgentsFromFile("user_agents.txt")
 		if err != nil {
+			color.Set(color.FgRed)
 			fmt.Printf("Error reading user_agents.txt: %v\n", err)
+			color.Unset()
 			return
 		}
-		runCheckProcess(agents)
+		concurrency := chooseSpeedMenu()
+		runCheckProcess(agents, concurrency)
 	case "2":
 		agents := getUserAgentsFromInput()
-		runCheckProcess(agents)
+		concurrency := chooseSpeedMenu()
+		runCheckProcess(agents, concurrency)
 	default:
+		color.Set(color.FgRed)
 		fmt.Println("Invalid option. Exiting.")
+		color.Unset()
 	}
 }
