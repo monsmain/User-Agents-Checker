@@ -41,13 +41,13 @@ cd User-Agents-Checker
 go run check.go
 ```
 ### گزینه‌های استفاده :
-- گزینه Use default User-Agents : 
-- گزینه Enter your own User-Agents : 
+- گزینه Use default User-Agents :از این گزینه میتوانید به صورت خودکار تمام User-Agent هایی که در فایل User-Browser.txt قرار دارند را برای بررسی کنید.
+- گزینه Enter your own User-Agents :از این گزینه میتوانید به صورت دستی User-Agent های مورد نظر خود را مستقیماً در ترمینال وارد کنید.
 
 >  **راهنما**                        
 
 >1: از بین 2 گزینه Use default User-Agents و Enter your own User-Agents یکی رو انتخاب کنید.
-
+>2: در
 
 ## اهدا❤️
 اگر این کد را برای خود مفید می‌دانید، می‌توانید با اهدای هر مبلغی از آن حمایت کنید. 
