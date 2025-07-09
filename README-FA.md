@@ -38,7 +38,7 @@ cd User-Agents-Checker
 ```
 ### قدم آخر: اجرای آن
 ```
-go run check.go user_agents.txt
+go run check.go
 ```
 ### راهنما : بزودی...
 ## اهدا❤️
