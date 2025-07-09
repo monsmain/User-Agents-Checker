@@ -43,7 +43,6 @@ func printProgress(current, total int) {
 	}
 }
 
-
 func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- FailedResult, semaphore chan struct{}, wg *sync.WaitGroup, progressChan chan<- struct{}) {
 	defer wg.Done()
 	defer func() { <-semaphore }() 
@@ -112,21 +111,18 @@ func getUserAgentsFromInput() []string {
 	return agents
 }
 
-
 func chooseSpeedMenu() int {
-	fmt.Println("\nSelect speed:")
-	fmt.Println("1 - Fast (50 concurrent checks)")
-	fmt.Println("2 - Medium (10 concurrent checks)")
-	fmt.Print("Enter your choice (1 or 2): ")
+	fmt.Print(":Choose speed [medium/fast] ")
 	var speedChoice string
 	fmt.Scanln(&speedChoice)
+	speedChoice = strings.ToLower(strings.TrimSpace(speedChoice))
 	switch speedChoice {
-	case "1":
+	case "fast":
 		return 50
-	case "2":
+	case "medium":
 		return 10
 	default:
-		fmt.Println("Invalid speed. Defaulting to Medium (10).")
+		fmt.Println("Invalid speed. Running with medium speed (10 concurrent checks).")
 		return 10
 	}
 }
@@ -150,7 +146,6 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	var readerWg sync.WaitGroup
 	readerWg.Add(2)
 
-
 	go func() {
 		defer readerWg.Done()
 		for ua := range activeChan {
@@ -158,14 +153,12 @@ func runCheckProcess(userAgents []string, concurrency int) {
 		}
 	}()
 
-
 	go func() {
 		defer readerWg.Done()
 		for result := range failedChan {
 			failedUserAgents = append(failedUserAgents, result)
 		}
 	}()
-
 
 	var progressWg sync.WaitGroup
 	progressWg.Add(1)
@@ -181,7 +174,7 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	fmt.Println("🔎 Checking User-Agents... Please wait.")
 	startTime := time.Now()
 	for _, userAgent := range userAgents {
-		semaphore <- struct{}{} 
+		semaphore <- struct{}{}
 		wg.Add(1)
 		go checkUserAgent(userAgent, activeChan, failedChan, semaphore, &wg, progressChan)
 	}
