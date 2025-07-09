@@ -10,9 +10,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"strconv"
-
-	"github.com/fatih/color"
 )
 
 const (
@@ -40,9 +37,7 @@ func clearScreen() {
 func printProgress(current, total int) {
 	percent := (current * 100) / total
 	bar := strings.Repeat("█", percent/2) + strings.Repeat("-", 50-percent/2)
-	color.Set(color.FgYellow)
 	fmt.Printf("\rProgress: [%s] %d%% (%d/%d)", bar, percent, current, total)
-	color.Unset()
 	if current == total {
 		fmt.Print("\n")
 	}
@@ -51,7 +46,6 @@ func printProgress(current, total int) {
 
 func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- FailedResult, semaphore chan struct{}, wg *sync.WaitGroup, progressChan chan<- struct{}) {
 	defer wg.Done()
-
 	defer func() { <-semaphore }() 
 
 	var lastErr error
@@ -118,13 +112,12 @@ func getUserAgentsFromInput() []string {
 	return agents
 }
 
+
 func chooseSpeedMenu() int {
-	color.Set(color.FgCyan)
 	fmt.Println("\nSelect speed:")
 	fmt.Println("1 - Fast (50 concurrent checks)")
 	fmt.Println("2 - Medium (10 concurrent checks)")
 	fmt.Print("Enter your choice (1 or 2): ")
-	color.Unset()
 	var speedChoice string
 	fmt.Scanln(&speedChoice)
 	switch speedChoice {
@@ -133,9 +126,7 @@ func chooseSpeedMenu() int {
 	case "2":
 		return 10
 	default:
-		color.Set(color.FgRed)
 		fmt.Println("Invalid speed. Defaulting to Medium (10).")
-		color.Unset()
 		return 10
 	}
 }
@@ -143,9 +134,7 @@ func chooseSpeedMenu() int {
 func runCheckProcess(userAgents []string, concurrency int) {
 	total := len(userAgents)
 	if total == 0 {
-		color.Set(color.FgRed)
 		fmt.Println("No User-Agents found.")
-		color.Unset()
 		return
 	}
 
@@ -189,9 +178,7 @@ func runCheckProcess(userAgents []string, concurrency int) {
 		}
 	}()
 
-	color.Set(color.FgHiMagenta)
 	fmt.Println("🔎 Checking User-Agents... Please wait.")
-	color.Unset()
 	startTime := time.Now()
 	for _, userAgent := range userAgents {
 		semaphore <- struct{}{} 
@@ -208,61 +195,43 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	elapsed := time.Since(startTime)
 
 	clearScreen()
-	color.Set(color.FgGreen)
 	fmt.Println("✅ Review completed.")
-	color.Unset()
 	fmt.Println("------------------------------------")
-	// Show active User-Agents
-	color.Set(color.FgGreen)
+
 	fmt.Println("🎯 Active User-Agents:")
-	color.Unset()
 	if len(activeUserAgents) == 0 {
-		color.Set(color.FgYellow)
 		fmt.Println("No active User-Agents found!")
-		color.Unset()
 	} else {
 		for _, ua := range activeUserAgents {
-			color.Set(color.FgGreen)
 			fmt.Println(ua)
-			color.Unset()
 			fmt.Println("------------------------------------")
 		}
 	}
 	fmt.Println("------------------------------------")
-	// Show failed User-Agents
+
 	if len(failedUserAgents) == 0 {
-		color.Set(color.FgGreen)
 		fmt.Println("🎉 All User-Agents are working correctly!")
-		color.Unset()
 	} else {
-		color.Set(color.FgRed)
 		fmt.Printf("❌ %d inactive User-Agent(s) found:\n\n", len(failedUserAgents))
-		color.Unset()
 		for _, result := range failedUserAgents {
-			color.Set(color.FgRed)
 			fmt.Printf("User-Agent: %s\n", result.UserAgent)
 			fmt.Printf("Reason: %s\n", result.Reason)
-			color.Unset()
 			fmt.Println("------------------------------------")
 		}
 	}
 
-	color.Set(color.FgCyan)
 	fmt.Printf("\nSummary:\nTotal: %d  |  Active: %d  |  Inactive: %d  |  Time: %s\n",
 		total, len(activeUserAgents), len(failedUserAgents), elapsed.Round(time.Second).String())
-	color.Unset()
 }
 
 func main() {
 	clearScreen()
-	color.Set(color.FgCyan)
 	fmt.Println("Welcome to User-Agent Checker!")
 	fmt.Println("==============================")
 	fmt.Println("Please choose an option:")
 	fmt.Println("1 - Use default User-Agents from user_agents.txt")
 	fmt.Println("2 - Enter your own User-Agents (comma separated)")
 	fmt.Print("Enter your choice (1 or 2): ")
-	color.Unset()
 
 	var choice string
 	fmt.Scanln(&choice)
@@ -271,9 +240,7 @@ func main() {
 	case "1":
 		agents, err := getUserAgentsFromFile("user_agents.txt")
 		if err != nil {
-			color.Set(color.FgRed)
 			fmt.Printf("Error reading user_agents.txt: %v\n", err)
-			color.Unset()
 			return
 		}
 		concurrency := chooseSpeedMenu()
@@ -283,8 +250,6 @@ func main() {
 		concurrency := chooseSpeedMenu()
 		runCheckProcess(agents, concurrency)
 	default:
-		color.Set(color.FgRed)
 		fmt.Println("Invalid option. Exiting.")
-		color.Unset()
 	}
 }
