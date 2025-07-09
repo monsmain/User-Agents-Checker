@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -25,6 +26,8 @@ const (
 	ColorWhite  = "\033[01;37m"
 	ColorReset  = "\033[0m"
 )
+
+var userAgentPattern = regexp.MustCompile(`^(Mozilla\/5\.0|Opera\/).*(Chrome|Firefox|Safari|Edge|OPR|Opera|MSIE|Trident)\/[0-9\.]+.*$`)
 
 type FailedResult struct {
 	UserAgent string
@@ -53,7 +56,13 @@ func printProgress(current, total int) {
 
 func checkUserAgent(ua string, activeChan chan<- string, failedChan chan<- FailedResult, semaphore chan struct{}, wg *sync.WaitGroup, progressChan chan<- struct{}) {
 	defer wg.Done()
-	defer func() { <-semaphore }() 
+	defer func() { <-semaphore }()
+
+	if !userAgentPattern.MatchString(ua) {
+		failedChan <- FailedResult{UserAgent: ua, Reason: "Invalid User-Agent structure (not real UA)"}
+		progressChan <- struct{}{}
+		return
+	}
 
 	var lastErr error
 	for attempt := 1; attempt <= maxRetries; attempt++ {
@@ -125,10 +134,10 @@ func chooseSpeedMenu() (int, string) {
 	speedChoice = strings.ToLower(strings.TrimSpace(speedChoice))
 	switch speedChoice {
 	case "fast":
-		fmt.Println(ColorRed + "Fast mode selected." + ColorReset)
+		fmt.Println(ColorYellow + "Fast mode selected." + ColorReset)
 		return 50, "Fast mode selected."
 	case "medium":
-		fmt.Println(ColorWhite + "Medium mode selected." + ColorReset)
+		fmt.Println(ColorYellow + "Medium mode selected." + ColorReset)
 		return 10, "Medium mode selected."
 	default:
 		fmt.Println(ColorRed + "Invalid speed choice. Defaulting to medium mode" + ColorReset)
@@ -232,7 +241,7 @@ func main() {
 	fmt.Println(ColorYellow + "Please choose an option:" + ColorReset)
 	fmt.Println(ColorWhite + "1 - Use default User-Agents from user_agents.txt" + ColorReset)
 	fmt.Println(ColorWhite + "2 - Enter your own User-Agents (comma separated)" + ColorReset)
-	fmt.Print(ColorRed + "Enter your choice (1 or 2): " + ColorReset)
+	fmt.Print(ColorWhite + "Enter your choice (1 or 2): " + ColorReset)
 
 	var choice string
 	fmt.Scanln(&choice)
