@@ -112,7 +112,7 @@ func getUserAgentsFromFile(filename string) ([]string, error) {
 }
 
 func getUserAgentsFromInput() []string {
-    fmt.Println(ColorWhite + "Enter your User-Agent(s), you can paste one per line or separate by comma, then press Enter and again Enter on empty line:" + ColorReset)
+    fmt.Println(ColorWhite + "Enter each User-Agent in a separate line, then press Enter on empty line:" + ColorReset)
     reader := bufio.NewReader(os.Stdin)
     var agents []string
     for {
@@ -124,13 +124,7 @@ func getUserAgentsFromInput() []string {
         if line == "" {
             break
         }
-
-        for _, item := range strings.Split(line, ",") {
-            ua := strings.TrimSpace(item)
-            if ua != "" {
-                agents = append(agents, ua)
-            }
-        }
+        agents = append(agents, line)
     }
     return agents
 }
