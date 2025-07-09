@@ -12,6 +12,12 @@
     </p>
 </div>
 
+### Future Updates:
+| New Features | Status |
+|:---|:---:|
+| Adding Instagram User Agents | ⏳ In Progress |
+| Adding PayPal User Agents | ⏳ In Progress |
+
 ## 📥Download Termux for Android:
 | Source | Download Links
 |:--------:| -------------:|
