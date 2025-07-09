@@ -48,7 +48,7 @@ func clearScreen() {
 func printProgress(current, total int) {
 	percent := (current * 100) / total
 	bar := strings.Repeat("█", percent/2) + strings.Repeat("-", 50-percent/2)
-	fmt.Printf(ColorYellow+"\rProgress: [%s] %d%% (%d/%d)"+ColorReset, bar, percent, current, total)
+	fmt.Printf(ColorRed+"\rProgress: [%s] %d%% (%d/%d)"+ColorReset, bar, percent, current, total)
 	if current == total {
 		fmt.Print("\n")
 	}
