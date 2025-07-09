@@ -241,7 +241,7 @@ func main() {
 	fmt.Println(ColorWhite + "==============================" + ColorReset)
 	fmt.Println(ColorYellow + "Please choose an option:" + ColorReset)
 	fmt.Println(ColorWhite + "1 - Use default User-Agents from User-Browser.txt" + ColorReset)
-	fmt.Println(ColorWhite + "2 - Enter your own User-Agents (comma separated)" + ColorReset)
+	fmt.Println(ColorWhite + "2 - Enter your own User-Agents (Each in a line)" + ColorReset)
 	fmt.Print(ColorRed + "Enter your choice (1 or 2): " + ColorReset)
 
 	var choice string
