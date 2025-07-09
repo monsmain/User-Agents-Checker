@@ -206,8 +206,7 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	elapsed := time.Since(startTime)
 
 	clearScreen()
-	fmt.Println(ColorGreen + "✅ Review completed." + ColorReset)
-	fmt.Println("------------------------------------")
+	fmt.Println(ColorWhite + "✅ Review completed." + ColorReset)
 	fmt.Println(ColorGreen + "🎯 Active User-Agents:" + ColorReset)
 	fmt.Println("------------------------------------")
 	if len(activeUserAgents) == 0 {
