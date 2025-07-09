@@ -240,7 +240,7 @@ func main() {
 	fmt.Println(ColorGreen + "Welcome to User-Agent Checker!" + ColorReset)
 	fmt.Println(ColorWhite + "==============================" + ColorReset)
 	fmt.Println(ColorYellow + "Please choose an option:" + ColorReset)
-	fmt.Println(ColorWhite + "1 - Use default User-Agents from user_agents.txt" + ColorReset)
+	fmt.Println(ColorWhite + "1 - Use default User-Agents from User-Browser.txt" + ColorReset)
 	fmt.Println(ColorWhite + "2 - Enter your own User-Agents (comma separated)" + ColorReset)
 	fmt.Print(ColorRed + "Enter your choice (1 or 2): " + ColorReset)
 
@@ -249,9 +249,9 @@ func main() {
 
 	switch choice {
 	case "1":
-		agents, err := getUserAgentsFromFile("user_agents.txt")
+		agents, err := getUserAgentsFromFile("User-Browser.txt")
 		if err != nil {
-			fmt.Printf(ColorRed+"Error reading user_agents.txt: %v\n"+ColorReset, err)
+			fmt.Printf(ColorRed+"Error reading User-Browser.txt: %v\n"+ColorReset, err)
 			return
 		}
 		concurrency, _ := chooseSpeedMenu()
