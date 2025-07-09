@@ -209,6 +209,7 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	fmt.Println(ColorGreen + "✅ Review completed." + ColorReset)
 	fmt.Println("------------------------------------")
 	fmt.Println(ColorGreen + "🎯 Active User-Agents:" + ColorReset)
+	fmt.Println("------------------------------------")
 	if len(activeUserAgents) == 0 {
 		fmt.Println(ColorYellow + "No active User-Agents found!" + ColorReset)
 	} else {
