@@ -112,19 +112,27 @@ func getUserAgentsFromFile(filename string) ([]string, error) {
 }
 
 func getUserAgentsFromInput() []string {
-	fmt.Println(ColorWhite + "Enter your User-Agents separated by a comma ',' (e.g. UA1,UA2,UA3):" + ColorReset)
-	reader := bufio.NewReader(os.Stdin)
-	line, _ := reader.ReadString('\n')
-	line = strings.TrimSpace(line)
-	parts := strings.Split(line, ",")
-	var agents []string
-	for _, ua := range parts {
-		trimmed := strings.TrimSpace(ua)
-		if trimmed != "" {
-			agents = append(agents, trimmed)
-		}
-	}
-	return agents
+    fmt.Println(ColorWhite + "Enter your User-Agent(s), you can paste one per line or separate by comma, then press Enter and again Enter on empty line:" + ColorReset)
+    reader := bufio.NewReader(os.Stdin)
+    var agents []string
+    for {
+        line, err := reader.ReadString('\n')
+        if err != nil {
+            break
+        }
+        line = strings.TrimSpace(line)
+        if line == "" {
+            break
+        }
+
+        for _, item := range strings.Split(line, ",") {
+            ua := strings.TrimSpace(item)
+            if ua != "" {
+                agents = append(agents, ua)
+            }
+        }
+    }
+    return agents
 }
 
 func chooseSpeedMenu() (int, string) {
