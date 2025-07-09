@@ -44,7 +44,7 @@ cd User-Agents-Checker
 ```
 ### Final Step: Run It
 ```
-go run check.go user_agents.txt
+go run check.go
 ```
 ### Guide:coming soon...
 ## Donate:
