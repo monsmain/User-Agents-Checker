@@ -111,19 +111,22 @@ func getUserAgentsFromInput() []string {
 	return agents
 }
 
-func chooseSpeedMenu() int {
+
+func chooseSpeedMenu() (int, string) {
 	fmt.Print(":Choose speed [medium/fast] ")
 	var speedChoice string
 	fmt.Scanln(&speedChoice)
 	speedChoice = strings.ToLower(strings.TrimSpace(speedChoice))
 	switch speedChoice {
 	case "fast":
-		return 50
+		fmt.Println("Fast mode selected.")
+		return 50, "Fast mode selected."
 	case "medium":
-		return 10
+		fmt.Println("Medium mode selected.")
+		return 10, "Medium mode selected."
 	default:
-		fmt.Println("Invalid speed. Running with medium speed (10 concurrent checks).")
-		return 10
+		fmt.Println("Invalid speed choice. Defaulting to medium mode")
+		return 10, "Invalid speed choice. Defaulting to medium mode"
 	}
 }
 
@@ -146,12 +149,14 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	var readerWg sync.WaitGroup
 	readerWg.Add(2)
 
+
 	go func() {
 		defer readerWg.Done()
 		for ua := range activeChan {
 			activeUserAgents = append(activeUserAgents, ua)
 		}
 	}()
+
 
 	go func() {
 		defer readerWg.Done()
@@ -160,6 +165,7 @@ func runCheckProcess(userAgents []string, concurrency int) {
 		}
 	}()
 
+	// Goroutine to print progress
 	var progressWg sync.WaitGroup
 	progressWg.Add(1)
 	go func() {
@@ -174,7 +180,7 @@ func runCheckProcess(userAgents []string, concurrency int) {
 	fmt.Println("🔎 Checking User-Agents... Please wait.")
 	startTime := time.Now()
 	for _, userAgent := range userAgents {
-		semaphore <- struct{}{}
+		semaphore <- struct{}{} 
 		wg.Add(1)
 		go checkUserAgent(userAgent, activeChan, failedChan, semaphore, &wg, progressChan)
 	}
@@ -236,11 +242,11 @@ func main() {
 			fmt.Printf("Error reading user_agents.txt: %v\n", err)
 			return
 		}
-		concurrency := chooseSpeedMenu()
+		concurrency, _ := chooseSpeedMenu()
 		runCheckProcess(agents, concurrency)
 	case "2":
 		agents := getUserAgentsFromInput()
-		concurrency := chooseSpeedMenu()
+		concurrency, _ := chooseSpeedMenu()
 		runCheckProcess(agents, concurrency)
 	default:
 		fmt.Println("Invalid option. Exiting.")
