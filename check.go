@@ -136,14 +136,14 @@ func chooseSpeedMenu() (int, string) {
 	speedChoice = strings.ToLower(strings.TrimSpace(speedChoice))
 	switch speedChoice {
 	case "fast":
-		fmt.Println(ColorYellow + "Fast mode selected." + ColorReset)
+		fmt.Println(ColorRed + "Fast mode selected." + ColorReset)
 		return 50, "Fast mode selected."
 	case "medium":
-		fmt.Println(ColorYellow + "Medium mode selected." + ColorReset)
-		return 10, "Medium mode selected."
+		fmt.Println(ColorWhite + "Medium mode selected." + ColorReset)
+		return 25, "Medium mode selected."
 	default:
 		fmt.Println(ColorRed + "Invalid speed choice. Defaulting to medium mode" + ColorReset)
-		return 10, "Invalid speed choice. Defaulting to medium mode"
+		return 25, "Invalid speed choice. Defaulting to medium mode"
 	}
 }
 
@@ -243,7 +243,7 @@ func main() {
 	fmt.Println(ColorYellow + "Please choose an option:" + ColorReset)
 	fmt.Println(ColorWhite + "1 - Use default User-Agents from user_agents.txt" + ColorReset)
 	fmt.Println(ColorWhite + "2 - Enter your own User-Agents (comma separated)" + ColorReset)
-	fmt.Print(ColorWhite + "Enter your choice (1 or 2): " + ColorReset)
+	fmt.Print(ColorRed + "Enter your choice (1 or 2): " + ColorReset)
 
 	var choice string
 	fmt.Scanln(&choice)
