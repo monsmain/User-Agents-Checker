@@ -125,6 +125,7 @@ func main() {
 	} else {
 		for _, ua := range activeUserAgents {
 			fmt.Println(ua)
+			fmt.Println("------------------------------------")
 		}
 	}
 	fmt.Println("------------------------------------")
@@ -136,7 +137,8 @@ func main() {
 		fmt.Printf("❌ %d inactive User-Agent(s) found:\n\n", len(failedUserAgents))
 		for _, result := range failedUserAgents {
 			fmt.Printf("User-Agent: %s\n", result.UserAgent)
-			fmt.Printf("Reason: %s\n\n", result.Reason)
+			fmt.Printf("Reason: %s\n", result.Reason)
+			fmt.Println("------------------------------------")
 		}
 	}
 }
