@@ -49,6 +49,10 @@ cd User-Agents-Checker
 ```
 go run check.go
 ```
+### If you have previously cloned the project, use this command to update the code to use the latest project updates.
+```
+git pull
+```
 ### Usage Options:
 - **Use default User-Agents option:** With this option, you can automatically check all the User-Agents listed in the `User-Browser.txt` file.
 - **Enter your own User-Agents option:** With this option, you can manually enter your desired User-Agents directly into the terminal to check them.
