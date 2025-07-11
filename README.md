@@ -67,7 +67,7 @@ git pull
 
 > 3-1: Then, just like with option 1, in the next step, select the checking speed in the `:Choose speed [medium/fast]` section based on (your internet speed and your phone's processing power), and the result will be shown to you in a fraction of a second.
 
-## Donate:If you find this code useful, you can support me by donating any amount
+## Donate: If you find this code useful, you can support me by donating any amount
 <a href="https://monsmain.github.io/index.html#timeline03-1l"><img src="https://img.shields.io/badge/Donate-E5322D?style=for-the-badge&logo=ilovepdf&logoColor=white" /></a>
 
 
