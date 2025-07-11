@@ -1,4 +1,4 @@
-<div align="center"> <h1>User Agents Checker✅️</h1>
+<div align="center"> <h1>User Agents Checker</h1>
 </div>
 <div align="center">
     <p>
