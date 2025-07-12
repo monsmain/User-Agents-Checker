@@ -1,4 +1,4 @@
-<div align="center"> <h1>یوزر ایجنت چکر✅️</h1>
+<div align="center"> <h1>یوزر ایجنت چکر</h1>
 </div>
 <div align="center">
     <p>
@@ -65,6 +65,8 @@ git pull
 ## اهدا❤️
 اگر این کد را برای خود مفید می‌دانید، می‌توانید با اهدای هر مبلغی از من حمایت کنید
   <a href="https://monsmain.github.io/index.html#timeline03-1l"><img src="https://img.shields.io/badge/Donate-E5322D?style=for-the-badge&logo=ilovepdf&logoColor=white" /></a>
+## مشارکت:
+ما همیشه به دنبال بهبود ابزار هستیم! اگر ایده‌ای دارید یا باگ پیدا کردید، لطفاً یک [Issue](https://github.com/monsmain/User-Agents-Checker/issues) جدید ایجاد کنید یا یک [Pull Request](https://github.com/monsmain/User-Agents-Checker/pulls) ارسال کنید.
 
 
 
